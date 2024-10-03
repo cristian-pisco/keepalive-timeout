@@ -1,0 +1,26 @@
+version: '3'
+services:
+  nestjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-app
+    ports:
+      - "3000:3000"  # Exponer el puerto de NestJS
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/usr/src/app
+    mem_limit: 2g  # Limitar a 2GB de memoria
+    command: npm run start:dev  # Modo desarrollo para reflejar cambios
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "8080:80"  # Exponer el puerto 8080 para acceder al servicio desde la máquina
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    mem_limit: 2g  # Limitar a 2GB de memoria
+    depends_on:
+      - nestjs
